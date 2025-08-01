@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>COUPLE COLLAB EVENT – Bảng Thi Đấu</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+      margin-bottom: 60px; /* để tránh che nội dung bởi nav */
+    }
+    h2 {
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+    }
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #ddd;
+      padding: 8px 0;
+      text-align: center;
+      font-size: 13px;
+    }
+    nav a {
+      margin: 0 8px;
+      text-decoration: none;
+      color: #333;
+      padding: 6px 12px;
+      border-radius: 4px;
+      background: #f0f0f0;
+    }
+    nav a:hover {
+      background: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h2>Bảng Thi Đấu – COUPLE COLLAB EVENT</h2>
+  <table id="matchTable">
+    <thead>
+      <tr>
+        <th>Cặp đấu</th>
+        <th>Couple A</th>
+        <th>Couple A</th>
+        <th>Couple B</th>
+        <th>Couple B</th>
+        <th>Thời gian đấu</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <nav>
+    <a href="dangky.html">Đăng ký</a>
+    <a href="danhsach.html">Danh sách</a>
+    <a href="bangthidau.html">Thi đấu</a>
+    <a href="bangdiem.html">Bảng điểm</a>
+  </nav>
+
+  <script>
+    const API_URL = "https://api.sheetbest.com/sheets/1a1c2a8f-521c-433e-af69-d07c8bf1165f";
+
+    fetch(API_URL)
+      .then(res => res.json())
+      .then(data => {
+        const tbody = document.querySelector("#matchTable tbody");
+        const matches = data.filter(row => row["Cặp đấu"]);
+        matches.forEach(match => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${match["Cặp đấu"] || ""}</td>
+            <td>${match["Người chơi 1"] || ""}</td>
+            <td>${match["Người chơi 2"] || ""}</td>
+            <td>${match["Người chơi 3"] || ""}</td>
+            <td>${match["Người chơi 4"] || ""}</td>
+            <td>${match["Thời gian đấu"] || ""}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+  </script>
+</body>
+</html>

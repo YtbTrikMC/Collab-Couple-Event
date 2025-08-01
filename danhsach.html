@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>COUPLE COLLAB EVENT – Danh sách người tham dự</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 30px 20px 80px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: #fff;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #e0e0e0;
+      border-top: 1px solid #ccc;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      font-size: 14px;
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      color: #333;
+    }
+
+    .bottom-nav a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h2>Danh sách người tham dự (đã được duyệt)</h2>
+  <ul id="list"></ul>
+
+  <!-- Thanh điều hướng -->
+  <div class="bottom-nav">
+    <a href="dangky.html">Đăng ký</a>
+    <a href="danhsach.html">Danh sách</a>
+    <a href="bangthidau.html">Thi đấu</a>
+    <a href="bangdiem.html">Bảng điểm</a>
+  </div>
+
+  <script>
+    const SHEET_API = "https://api.sheetbest.com/sheets/1a1c2a8f-521c-433e-af69-d07c8bf1165f";
+
+    async function loadDanhSach() {
+      const res = await fetch(SHEET_API);
+      const data = await res.json();
+
+      const approved = data.filter(u => u["Được duyệt"] === "true" || u["Được duyệt"] === "TRUE");
+      const list = document.getElementById("list");
+      list.innerHTML = "";
+
+      if (approved.length === 0) {
+        list.innerHTML = "<li>Chưa có người nào được duyệt.</li>";
+        return;
+      }
+
+      approved.forEach((user, index) => {
+        const li = document.createElement("li");
+        li.textContent = `${index + 1}. ${user.Nickname || user.Username}`;
+        list.appendChild(li);
+      });
+    }
+
+    loadDanhSach();
+  </script>
+</body>
+</html>
