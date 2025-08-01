@@ -9,135 +9,116 @@
       padding: 20px;
       max-width: 500px;
       margin: auto;
-      background: #f7f7f7;
+      background: #f2f2f2;
     }
     h2 {
       text-align: center;
     }
     label {
-      display: block;
       margin-top: 10px;
+      display: block;
     }
     input, select, button {
+      display: block;
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       margin-top: 5px;
-      box-sizing: border-box;
+      font-size: 16px;
     }
-    .hidden {
-      display: none;
+    #nav {
+      margin-top: 20px;
+      text-align: center;
     }
-    nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #ddd;
-      display: flex;
-      justify-content: space-around;
-      padding: 5px 0;
-      font-size: 14px;
-    }
-    nav a {
+    #nav a {
+      margin: 0 10px;
       text-decoration: none;
-      color: black;
+      color: #007bff;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
-  <h2>Đăng ký Tham Gia</h2>
-  <form id="registerForm">
-    <label for="nickname">Nickname:</label>
-    <input type="text" id="nickname" required>
+  <h2>Đăng ký tham gia sự kiện</h2>
 
+  <form id="registerForm">
     <label for="gmail">Gmail:</label>
     <input type="email" id="gmail" required>
 
+    <label for="facebook">Link Facebook:</label>
+    <input type="url" id="facebook" placeholder="https://facebook.com/..." required>
+
+    <label for="nickname">Nickname:</label>
+    <input type="text" id="nickname" required>
+
     <label for="pttt">Phương thức thanh toán:</label>
-    <select id="pttt" required onchange="toggleFields()">
+    <select id="pttt" required onchange="updatePTTT()">
       <option value="">-- Chọn --</option>
-      <option value="Ngân hàng">Ngân hàng</option>
+      <option value="Bank">Ngân hàng</option>
       <option value="Momo">Momo</option>
       <option value="Nhà mạng">Nhà mạng</option>
     </select>
 
-    <div id="bankFields" class="hidden">
+    <div id="bankFields" style="display:none;">
       <label for="stk">Số tài khoản:</label>
       <input type="text" id="stk">
       <label for="bank">Tên ngân hàng:</label>
       <input type="text" id="bank">
     </div>
 
-    <div id="momoFields" class="hidden">
-      <label for="stk_momo">Số Momo:</label>
-      <input type="text" id="stk_momo">
+    <div id="momoFields" style="display:none;">
+      <label for="momoStk">Số Momo:</label>
+      <input type="text" id="momoStk">
     </div>
 
-    <div id="telcoFields" class="hidden">
+    <div id="carrierFields" style="display:none;">
       <label for="sdt">Số điện thoại:</label>
       <input type="text" id="sdt">
-      <label for="nhamang">Tên nhà mạng:</label>
+      <label for="nhamang">Nhà mạng:</label>
       <input type="text" id="nhamang">
     </div>
 
     <button type="submit">Gửi đăng ký</button>
   </form>
 
-  <p id="status" style="text-align:center;color:green"></p>
-
-  <nav>
-    <a href="dangky.html">Đăng ký</a>
-    <a href="danhsach.html">Danh sách</a>
-    <a href="bangthidau.html">Bảng thi đấu</a>
-    <a href="bangdiem.html">Bảng điểm</a>
-  </nav>
+  <div id="nav">
+    <a href="dangky.html">Trang 2</a>
+    <a href="danhsach.html">Trang 3</a>
+    <a href="bangthidau.html">Trang 4</a>
+    <a href="bangdiem.html">Trang 5</a>
+  </div>
 
   <script>
     const SHEET_API = "https://api.sheetbest.com/sheets/1a1c2a8f-521c-433e-af69-d07c8bf1165f";
-
     const username = localStorage.getItem("username");
+
     if (!username) {
-      alert("Bạn chưa đăng nhập.");
+      alert("Bạn cần đăng nhập trước!");
       window.location.href = "index.html";
     }
 
-    function toggleFields() {
-      const pttt = document.getElementById("pttt").value;
-      document.getElementById("bankFields").classList.add("hidden");
-      document.getElementById("momoFields").classList.add("hidden");
-      document.getElementById("telcoFields").classList.add("hidden");
-
-      if (pttt === "Ngân hàng") document.getElementById("bankFields").classList.remove("hidden");
-      if (pttt === "Momo") document.getElementById("momoFields").classList.remove("hidden");
-      if (pttt === "Nhà mạng") document.getElementById("telcoFields").classList.remove("hidden");
-    }
-
-    async function getUsers() {
-      const res = await fetch(SHEET_API);
-      return await res.json();
-    }
-
-    async function updateUser(updated) {
-      await fetch(`${SHEET_API}/Username/${updated.Username}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updated)
-      });
-    }
-
-    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+    document.getElementById("registerForm").addEventListener("submit", async function(e) {
       e.preventDefault();
-
-      const nickname = document.getElementById("nickname").value.trim();
       const gmail = document.getElementById("gmail").value.trim();
+      const nickname = document.getElementById("nickname").value.trim();
       const pttt = document.getElementById("pttt").value;
-      const stk = document.getElementById("stk")?.value || document.getElementById("stk_momo")?.value || "";
-      const bank = document.getElementById("bank")?.value || "";
-      const sdt = document.getElementById("sdt")?.value || "";
-      const nhamang = document.getElementById("nhamang")?.value || "";
+      const facebook = document.getElementById("facebook").value.trim();
 
-      const users = await getUsers();
-      const oldUser = users.find(u => u.Username === username);
+      let stk = "", bank = "", momo = "", sdt = "", nhamang = "";
+
+      if (pttt === "Bank") {
+        stk = document.getElementById("stk").value.trim();
+        bank = document.getElementById("bank").value.trim();
+      } else if (pttt === "Momo") {
+        stk = document.getElementById("momoStk").value.trim();
+      } else if (pttt === "Nhà mạng") {
+        sdt = document.getElementById("sdt").value.trim();
+        nhamang = document.getElementById("nhamang").value.trim();
+      }
+
+      const res = await fetch(SHEET_API);
+      const data = await res.json();
+      const oldUser = data.find(u => u.Username === username);
+
       if (!oldUser) return alert("Không tìm thấy tài khoản.");
 
       const updated = {
@@ -150,6 +131,7 @@
         "Ngân hàng": bank,
         "SĐT": sdt,
         "Nhà mạng": nhamang,
+        Facebook: facebook,
         "Trạng thái": "Đã đăng ký",
         "Được duyệt": oldUser["Được duyệt"] || "false",
         Điểm: oldUser["Điểm"] || "0",
@@ -158,9 +140,22 @@
         "Thời gian đấu": oldUser["Thời gian đấu"] || ""
       };
 
-      await updateUser(updated);
-      document.getElementById("status").innerText = "Gửi đăng ký thành công!";
+      await fetch(SHEET_API + `/Username/${username}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated)
+      });
+
+      alert("Đăng ký thành công!");
+      location.reload();
     });
+
+    function updatePTTT() {
+      const value = document.getElementById("pttt").value;
+      document.getElementById("bankFields").style.display = value === "Bank" ? "block" : "none";
+      document.getElementById("momoFields").style.display = value === "Momo" ? "block" : "none";
+      document.getElementById("carrierFields").style.display = value === "Nhà mạng" ? "block" : "none";
+    }
   </script>
 </body>
 </html>
