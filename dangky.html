@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>COUPLE COLLAB EVENT - Đăng ký Tham Gia</title>
+  <meta charset="UTF-8" />
+  <title>COUPLE COLLAB EVENT – Đăng ký Tham Gia</title>
   <style>
     body {
       font-family: Arial, sans-serif;
+      padding: 20px;
       max-width: 500px;
       margin: auto;
-      padding: 20px;
-      background-color: #f9f9f9;
+      background: #f7f7f7;
     }
     h2 {
       text-align: center;
     }
     label {
-      font-weight: bold;
+      display: block;
+      margin-top: 10px;
     }
     input, select, button {
       width: 100%;
-      padding: 10px;
-      margin: 8px 0;
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
     }
     .hidden {
       display: none;
@@ -30,53 +32,58 @@
       bottom: 0;
       left: 0;
       width: 100%;
-      background: #333;
+      background: #ddd;
       display: flex;
       justify-content: space-around;
-      padding: 8px 0;
+      padding: 5px 0;
+      font-size: 14px;
     }
     nav a {
-      color: white;
       text-decoration: none;
-      font-size: 14px;
+      color: black;
     }
   </style>
 </head>
 <body>
-  <h2>Đăng ký tham gia sự kiện</h2>
-  <form id="form">
-    <label>Nickname</label>
+  <h2>Đăng ký Tham Gia</h2>
+  <form id="registerForm">
+    <label for="nickname">Nickname:</label>
     <input type="text" id="nickname" required>
 
-    <label>Gmail</label>
+    <label for="gmail">Gmail:</label>
     <input type="email" id="gmail" required>
 
-    <label>Phương thức thanh toán</label>
-    <select id="pttt" onchange="showFields()">
-      <option value="">--Chọn--</option>
-      <option value="Bank">Ngân hàng</option>
+    <label for="pttt">Phương thức thanh toán:</label>
+    <select id="pttt" required onchange="toggleFields()">
+      <option value="">-- Chọn --</option>
+      <option value="Ngân hàng">Ngân hàng</option>
       <option value="Momo">Momo</option>
       <option value="Nhà mạng">Nhà mạng</option>
     </select>
 
     <div id="bankFields" class="hidden">
-      <input type="text" id="stk" placeholder="Số tài khoản">
-      <input type="text" id="nganhang" placeholder="Tên ngân hàng">
+      <label for="stk">Số tài khoản:</label>
+      <input type="text" id="stk">
+      <label for="bank">Tên ngân hàng:</label>
+      <input type="text" id="bank">
     </div>
 
     <div id="momoFields" class="hidden">
-      <input type="text" id="stk_momo" placeholder="Số Momo">
+      <label for="stk_momo">Số Momo:</label>
+      <input type="text" id="stk_momo">
     </div>
 
     <div id="telcoFields" class="hidden">
-      <input type="text" id="sdt" placeholder="Số điện thoại">
-      <input type="text" id="nhamang" placeholder="Tên nhà mạng">
+      <label for="sdt">Số điện thoại:</label>
+      <input type="text" id="sdt">
+      <label for="nhamang">Tên nhà mạng:</label>
+      <input type="text" id="nhamang">
     </div>
 
     <button type="submit">Gửi đăng ký</button>
   </form>
 
-  <p id="status" style="text-align:center; color: green;"></p>
+  <p id="status" style="text-align:center;color:green"></p>
 
   <nav>
     <a href="dangky.html">Đăng ký</a>
@@ -88,53 +95,71 @@
   <script>
     const SHEET_API = "https://api.sheetbest.com/sheets/1a1c2a8f-521c-433e-af69-d07c8bf1165f";
 
-    function showFields() {
-      const pttt = document.getElementById("pttt").value;
-      document.getElementById("bankFields").style.display = pttt === "Bank" ? "block" : "none";
-      document.getElementById("momoFields").style.display = pttt === "Momo" ? "block" : "none";
-      document.getElementById("telcoFields").style.display = pttt === "Nhà mạng" ? "block" : "none";
+    const username = localStorage.getItem("username");
+    if (!username) {
+      alert("Bạn chưa đăng nhập.");
+      window.location.href = "index.html";
     }
 
-    document.getElementById("form").addEventListener("submit", async function(e) {
+    function toggleFields() {
+      const pttt = document.getElementById("pttt").value;
+      document.getElementById("bankFields").classList.add("hidden");
+      document.getElementById("momoFields").classList.add("hidden");
+      document.getElementById("telcoFields").classList.add("hidden");
+
+      if (pttt === "Ngân hàng") document.getElementById("bankFields").classList.remove("hidden");
+      if (pttt === "Momo") document.getElementById("momoFields").classList.remove("hidden");
+      if (pttt === "Nhà mạng") document.getElementById("telcoFields").classList.remove("hidden");
+    }
+
+    async function getUsers() {
+      const res = await fetch(SHEET_API);
+      return await res.json();
+    }
+
+    async function updateUser(updated) {
+      await fetch(`${SHEET_API}/Username/${updated.Username}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated)
+      });
+    }
+
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const username = localStorage.getItem("username");
-      if (!username) return alert("Bạn chưa đăng nhập.");
-
-      const nickname = document.getElementById("nickname").value;
-      const gmail = document.getElementById("gmail").value;
+      const nickname = document.getElementById("nickname").value.trim();
+      const gmail = document.getElementById("gmail").value.trim();
       const pttt = document.getElementById("pttt").value;
+      const stk = document.getElementById("stk")?.value || document.getElementById("stk_momo")?.value || "";
+      const bank = document.getElementById("bank")?.value || "";
+      const sdt = document.getElementById("sdt")?.value || "";
+      const nhamang = document.getElementById("nhamang")?.value || "";
 
-      let data = {
+      const users = await getUsers();
+      const oldUser = users.find(u => u.Username === username);
+      if (!oldUser) return alert("Không tìm thấy tài khoản.");
+
+      const updated = {
         Username: username,
-        Nickname: nickname,
+        Password: oldUser.Password || "",
         Gmail: gmail,
-        "PT_TT": pttt,
-        "Trạng thái": "Đã đăng ký"
+        Nickname: nickname,
+        PT_TT: pttt,
+        STK: stk,
+        "Ngân hàng": bank,
+        "SĐT": sdt,
+        "Nhà mạng": nhamang,
+        "Trạng thái": "Đã đăng ký",
+        "Được duyệt": oldUser["Được duyệt"] || "false",
+        Điểm: oldUser["Điểm"] || "0",
+        Couple: oldUser["Couple"] || "",
+        "Đối thủ": oldUser["Đối thủ"] || "",
+        "Thời gian đấu": oldUser["Thời gian đấu"] || ""
       };
 
-      if (pttt === "Bank") {
-        data.STK = document.getElementById("stk").value;
-        data["Ngân hàng"] = document.getElementById("nganhang").value;
-      } else if (pttt === "Momo") {
-        data.STK = document.getElementById("stk_momo").value;
-      } else if (pttt === "Nhà mạng") {
-        data["SĐT"] = document.getElementById("sdt").value;
-        data["Nhà mạng"] = document.getElementById("nhamang").value;
-      }
-
-      try {
-        await fetch(SHEET_API + "/Username/" + username, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-
-        document.getElementById("status").innerText = "Gửi đăng ký thành công!";
-      } catch (error) {
-        alert("Lỗi khi gửi dữ liệu!");
-        console.error(error);
-      }
+      await updateUser(updated);
+      document.getElementById("status").innerText = "Gửi đăng ký thành công!";
     });
   </script>
 </body>
