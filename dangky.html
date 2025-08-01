@@ -1,173 +1,139 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Đăng ký tham gia - COUPLE COLLAB EVENT</title>
+  <meta charset="UTF-8">
+  <title>COUPLE COLLAB EVENT - Đăng ký Tham Gia</title>
   <style>
     body {
-      font-family: sans-serif;
-      padding-bottom: 60px; /* để không bị che bởi nav dưới */
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+      background-color: #f9f9f9;
     }
-
+    h2 {
+      text-align: center;
+    }
     label {
-      font-size: 14px;
+      font-weight: bold;
     }
-
-    input, select {
-      width: 95%;
-      padding: 6px;
-      margin-bottom: 10px;
-      font-size: 14px;
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
     }
-
-    button {
-      padding: 8px 16px;
-      font-size: 14px;
+    .hidden {
+      display: none;
     }
-
-    #status {
-      margin-top: 10px;
-      color: green;
-    }
-
-    /* Thanh điều hướng dưới */
-    .bottom-nav {
+    nav {
       position: fixed;
       bottom: 0;
       left: 0;
-      right: 0;
-      background: #f0f0f0;
-      border-top: 1px solid #ccc;
+      width: 100%;
+      background: #333;
       display: flex;
       justify-content: space-around;
       padding: 8px 0;
-      font-size: 13px;
     }
-
-    .bottom-nav a {
+    nav a {
+      color: white;
       text-decoration: none;
-      color: #333;
-    }
-
-    .bottom-nav a:hover {
-      text-decoration: underline;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
   <h2>Đăng ký tham gia sự kiện</h2>
+  <form id="form">
+    <label>Nickname</label>
+    <input type="text" id="nickname" required>
 
-  <form id="registerForm">
-    <label>Nickname:</label><br />
-    <input type="text" id="nickname" required /><br />
+    <label>Gmail</label>
+    <input type="email" id="gmail" required>
 
-    <label>Gmail:</label><br />
-    <input type="email" id="gmail" required /><br />
-
-    <label>Phương thức thanh toán:</label><br />
-    <select id="pttt" required>
-      <option value="">-- Chọn phương thức --</option>
-      <option value="Ngân hàng">Ngân hàng</option>
+    <label>Phương thức thanh toán</label>
+    <select id="pttt" onchange="showFields()">
+      <option value="">--Chọn--</option>
+      <option value="Bank">Ngân hàng</option>
       <option value="Momo">Momo</option>
       <option value="Nhà mạng">Nhà mạng</option>
-    </select><br />
+    </select>
 
-    <div id="bankFields" style="display: none;">
-      <label>Số tài khoản:</label><br />
-      <input type="text" id="stk" /><br />
-      <label>Tên ngân hàng:</label><br />
-      <input type="text" id="nganhang" /><br />
+    <div id="bankFields" class="hidden">
+      <input type="text" id="stk" placeholder="Số tài khoản">
+      <input type="text" id="nganhang" placeholder="Tên ngân hàng">
     </div>
 
-    <div id="momoField" style="display: none;">
-      <label>Số tài khoản Momo:</label><br />
-      <input type="text" id="stkMomo" /><br />
+    <div id="momoFields" class="hidden">
+      <input type="text" id="stk_momo" placeholder="Số Momo">
     </div>
 
-    <div id="telcoFields" style="display: none;">
-      <label>Số điện thoại:</label><br />
-      <input type="text" id="sdt" /><br />
-      <label>Tên nhà mạng:</label><br />
-      <input type="text" id="nhamang" /><br />
+    <div id="telcoFields" class="hidden">
+      <input type="text" id="sdt" placeholder="Số điện thoại">
+      <input type="text" id="nhamang" placeholder="Tên nhà mạng">
     </div>
 
     <button type="submit">Gửi đăng ký</button>
   </form>
 
-  <p id="status"></p>
+  <p id="status" style="text-align:center; color: green;"></p>
 
-  <!-- Thanh điều hướng ở dưới -->
-  <div class="bottom-nav">
+  <nav>
     <a href="dangky.html">Đăng ký</a>
     <a href="danhsach.html">Danh sách</a>
-    <a href="bangthidau.html">Thi đấu</a>
+    <a href="bangthidau.html">Bảng thi đấu</a>
     <a href="bangdiem.html">Bảng điểm</a>
-  </div>
+  </nav>
 
   <script>
-    const API = "https://api.sheetbest.com/sheets/1a1c2a8f-521c-433e-af69-d07c8bf1165f";
-    const username = localStorage.getItem("username");
+    const SHEET_API = "https://api.sheetbest.com/sheets/1a1c2a8f-521c-433e-af69-d07c8bf1165f";
 
-    const pttt = document.getElementById("pttt");
-    pttt.addEventListener("change", () => {
-      document.getElementById("bankFields").style.display = "none";
-      document.getElementById("momoField").style.display = "none";
-      document.getElementById("telcoFields").style.display = "none";
+    function showFields() {
+      const pttt = document.getElementById("pttt").value;
+      document.getElementById("bankFields").style.display = pttt === "Bank" ? "block" : "none";
+      document.getElementById("momoFields").style.display = pttt === "Momo" ? "block" : "none";
+      document.getElementById("telcoFields").style.display = pttt === "Nhà mạng" ? "block" : "none";
+    }
 
-      if (pttt.value === "Ngân hàng") {
-        document.getElementById("bankFields").style.display = "block";
-      } else if (pttt.value === "Momo") {
-        document.getElementById("momoField").style.display = "block";
-      } else if (pttt.value === "Nhà mạng") {
-        document.getElementById("telcoFields").style.display = "block";
-      }
-    });
-
-    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+    document.getElementById("form").addEventListener("submit", async function(e) {
       e.preventDefault();
 
-      if (!username) {
-        document.getElementById("status").textContent = "Lỗi: Bạn chưa đăng nhập!";
-        return;
-      }
+      const username = localStorage.getItem("username");
+      if (!username) return alert("Bạn chưa đăng nhập.");
 
-      const data = {
-        Gmail: document.getElementById("gmail").value,
-        Nickname: document.getElementById("nickname").value,
-        PT_TT: pttt.value,
-        STK: "",
-        Ngân_hàng: "",
-        Nhà_mạng: "",
-        SĐT: "",
-        "Được duyệt": "Chưa"
+      const nickname = document.getElementById("nickname").value;
+      const gmail = document.getElementById("gmail").value;
+      const pttt = document.getElementById("pttt").value;
+
+      let data = {
+        Username: username,
+        Nickname: nickname,
+        Gmail: gmail,
+        "PT_TT": pttt,
+        "Trạng thái": "Đã đăng ký"
       };
 
-      if (pttt.value === "Ngân hàng") {
+      if (pttt === "Bank") {
         data.STK = document.getElementById("stk").value;
-        data.Ngân_hàng = document.getElementById("nganhang").value;
-      } else if (pttt.value === "Momo") {
-        data.STK = document.getElementById("stkMomo").value;
-      } else if (pttt.value === "Nhà mạng") {
-        data.SĐT = document.getElementById("sdt").value;
-        data.Nhà_mạng = document.getElementById("nhamang").value;
+        data["Ngân hàng"] = document.getElementById("nganhang").value;
+      } else if (pttt === "Momo") {
+        data.STK = document.getElementById("stk_momo").value;
+      } else if (pttt === "Nhà mạng") {
+        data["SĐT"] = document.getElementById("sdt").value;
+        data["Nhà mạng"] = document.getElementById("nhamang").value;
       }
 
       try {
-        const response = await fetch(`${API}?search=Username&value=${username}`, {
-          method: "PATCH",
+        await fetch(SHEET_API + "/Username/" + username, {
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
         });
 
-        if (response.ok) {
-          document.getElementById("status").textContent = "Đăng ký thành công. Vui lòng chờ BTC duyệt.";
-        } else {
-          document.getElementById("status").textContent = "Lỗi khi gửi đăng ký.";
-        }
+        document.getElementById("status").innerText = "Gửi đăng ký thành công!";
       } catch (error) {
+        alert("Lỗi khi gửi dữ liệu!");
         console.error(error);
-        document.getElementById("status").textContent = "Lỗi kết nối đến API.";
       }
     });
   </script>
