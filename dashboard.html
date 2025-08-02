@@ -2,65 +2,63 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>COUPLE COLLAB EVENT – Menu chính</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard</title>
   <style>
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 40px 20px 80px;
-      background: #f9f9f9;
-    }
-
-    h2 {
-      margin-bottom: 30px;
-    }
-
-    .menu {
-      font-size: 18px;
-      margin-bottom: 20px;
-    }
-
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #e0e0e0;
-      border-top: 1px solid #ccc;
       display: flex;
-      justify-content: space-around;
-      padding: 10px 0;
-      font-size: 14px;
     }
-
-    .bottom-nav a {
+    nav {
+      width: 180px;
+      background: #f0f0f0;
+      padding: 20px 10px;
+      height: 100vh;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+    }
+    nav h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    nav a {
+      display: block;
+      margin: 10px 0;
       text-decoration: none;
       color: #333;
+      font-weight: bold;
+      font-size: 14px;
     }
-
-    .bottom-nav a:hover {
-      text-decoration: underline;
+    .container {
+      flex: 1;
+      padding: 30px;
+      box-sizing: border-box;
+    }
+    .thankyou-box {
+      background: #e0ffe5;
+      padding: 20px;
+      border-left: 5px solid #2ecc71;
+      font-size: 16px;
+      max-width: 600px;
+      line-height: 1.5;
     }
   </style>
 </head>
 <body>
-  <h2>Chào mừng đến với COUPLE COLLAB EVENT!</h2>
+  <nav>
+    <h3>📋 Menu</h3>
+    <a href="dangky.html">1. Thông tin</a>
+    <a href="danhsach.html">2. Danh sách</a>
+    <a href="bangthidau.html">3. Bảng thi đấu</a>
+    <a href="bangdiem.html">4. Bảng điểm</a>
+  </nav>
 
-  <div class="menu">
-    <p>• Đăng ký tham gia sự kiện</p>
-    <p>• Xem danh sách người được duyệt</p>
-    <p>• Xem bảng thi đấu</p>
-    <p>• Xem bảng điểm</p>
-    <p>• Vui lòng tham gia nhóm MESSENGER : https://m.me/j/Aba6-3Tc6H9g0B8P/</p>
-  </div>
-
-  <!-- Thanh điều hướng -->
-  <div class="bottom-nav">
-    <a href="dangky.html">Đăng ký</a>
-    <a href="danhsach.html">Danh sách</a>
-    <a href="bangthidau.html">Thi đấu</a>
-    <a href="bangdiem.html">Bảng điểm</a>
+  <div class="container">
+    <div class="thankyou-box">
+      <strong>Cảm ơn bạn đã đăng ký tham dự sự kiện.</strong><br/>
+      Vui lòng theo dõi trang cá nhân chính thức của BTC để nhận thông tin mới nhất.
+    </div>
   </div>
 </body>
 </html>
