@@ -1,95 +1,94 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>COUPLE COLLAB EVENT – Bảng Thi Đấu</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bảng điểm - COUPLE COLLAB EVENT</title>
   <style>
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f9f9f9;
-      margin-bottom: 60px; /* để tránh che nội dung bởi nav */
-    }
-    h2 {
-      text-align: center;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: #fff;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 10px;
-      text-align: center;
-      font-size: 14px;
+      display: flex;
     }
     nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #ddd;
-      padding: 8px 0;
-      text-align: center;
-      font-size: 13px;
+      width: 180px;
+      background: #f0f0f0;
+      padding: 20px 10px;
+      height: 100vh;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+    nav h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
     }
     nav a {
-      margin: 0 8px;
+      display: block;
+      margin: 10px 0;
       text-decoration: none;
       color: #333;
-      padding: 6px 12px;
-      border-radius: 4px;
-      background: #f0f0f0;
+      font-weight: bold;
+      font-size: 14px;
     }
-    nav a:hover {
-      background: #ccc;
+    .container {
+      flex: 1;
+      padding: 20px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #aaa;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #eee;
     }
   </style>
 </head>
 <body>
-  <h2>Bảng Thi Đấu – COUPLE COLLAB EVENT</h2>
-  <table id="matchTable">
-    <thead>
-      <tr>
-        <th>Cặp đấu</th>
-        <th>Couple A</th>
-        <th>Couple A</th>
-        <th>Couple B</th>
-        <th>Couple B</th>
-        <th>Thời gian đấu</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
   <nav>
-    <a href="dangky.html">Đăng ký</a>
-    <a href="danhsach.html">Danh sách</a>
-    <a href="bangthidau.html">Thi đấu</a>
-    <a href="bangdiem.html">Bảng điểm</a>
+    <h3>📋 Menu</h3>
+    <a href="dangky.html">1. Thông tin</a>
+    <a href="danhsach.html">2. Danh sách</a>
+    <a href="bangthidau.html">3. Bảng thi đấu</a>
+    <a href="bangdiem.html">4. Bảng điểm</a>
   </nav>
 
-  <script>
-    const API_URL = "https://api.sheetbest.com/sheets/1a1c2a8f-521c-433e-af69-d07c8bf1165f";
+  <div class="container">
+    <h2>Bảng điểm</h2>
+    <table id="scoreTable">
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Nickname</th>
+          <th>Couple</th>
+          <th>Điểm</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-    fetch(API_URL)
+  <script>
+    const sheetAPI = 'https://api.sheetbest.com/sheets/1a1c2a8f-521c-433e-af69-d07c8bf1165f';
+
+    fetch(sheetAPI)
       .then(res => res.json())
       .then(data => {
-        const tbody = document.querySelector("#matchTable tbody");
-        const matches = data.filter(row => row["Cặp đấu"]);
-        matches.forEach(match => {
+        const filtered = data.filter(row => row["Được duyệt"] === "TRUE");
+        const tableBody = document.querySelector("#scoreTable tbody");
+        filtered.forEach((row, index) => {
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td>${match["Cặp đấu"] || ""}</td>
-            <td>${match["Người chơi 1"] || ""}</td>
-            <td>${match["Người chơi 2"] || ""}</td>
-            <td>${match["Người chơi 3"] || ""}</td>
-            <td>${match["Người chơi 4"] || ""}</td>
-            <td>${match["Thời gian đấu"] || ""}</td>
+            <td>${index + 1}</td>
+            <td>${row["Nickname"]}</td>
+            <td>${row["Couple"] || ""}</td>
+            <td>${row["Điểm"] || ""}</td>
           `;
-          tbody.appendChild(tr);
+          tableBody.appendChild(tr);
         });
       });
   </script>
