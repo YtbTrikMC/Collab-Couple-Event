@@ -2,94 +2,97 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>COUPLE COLLAB EVENT – Danh sách người tham dự</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Danh sách người tham dự</title>
   <style>
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
-      background: #f9f9f9;
-      padding: 30px 20px 80px;
-      max-width: 600px;
-      margin: auto;
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    li {
-      background: #fff;
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 6px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #e0e0e0;
-      border-top: 1px solid #ccc;
       display: flex;
-      justify-content: space-around;
-      padding: 10px 0;
-      font-size: 14px;
     }
-
-    .bottom-nav a {
+    nav {
+      width: 180px;
+      background: #f0f0f0;
+      padding: 20px 10px;
+      height: 100vh;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+    }
+    nav h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    nav a {
+      display: block;
+      margin: 10px 0;
       text-decoration: none;
       color: #333;
+      font-weight: bold;
+      font-size: 14px;
     }
-
-    .bottom-nav a:hover {
-      text-decoration: underline;
+    .container {
+      flex: 1;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    h2 {
+      margin-top: 0;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #aaa;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #eee;
     }
   </style>
 </head>
 <body>
-  <h2>Danh sách người tham dự (đã được duyệt)</h2>
-  <ul id="list"></ul>
+  <nav>
+    <h3>📋 Menu</h3>
+    <a href="dangky.html">1. Thông tin</a>
+    <a href="danhsach.html">2. Danh sách</a>
+    <a href="bangthidau.html">3. Bảng thi đấu</a>
+    <a href="bangdiem.html">4. Bảng điểm</a>
+  </nav>
 
-  <!-- Thanh điều hướng -->
-  <div class="bottom-nav">
-    <a href="dangky.html">Đăng ký</a>
-    <a href="danhsach.html">Danh sách</a>
-    <a href="bangthidau.html">Thi đấu</a>
-    <a href="bangdiem.html">Bảng điểm</a>
+  <div class="container">
+    <h2>Danh sách người tham dự</h2>
+    <table id="approvedList">
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Nickname</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
 
   <script>
-    const SHEET_API = "https://api.sheetbest.com/sheets/1a1c2a8f-521c-433e-af69-d07c8bf1165f";
+    const sheetAPI = 'https://api.sheetbest.com/sheets/1a1c2a8f-521c-433e-af69-d07c8bf1165f';
 
-    async function loadDanhSach() {
-      const res = await fetch(SHEET_API);
-      const data = await res.json();
+    fetch(sheetAPI)
+      .then(res => res.json())
+      .then(data => {
+        const filtered = data.filter(row => row["Được duyệt"] === "TRUE");
+        const tableBody = document.querySelector("#approvedList tbody");
 
-      const approved = data.filter(u => u["Được duyệt"] === "true" || u["Được duyệt"] === "TRUE");
-      const list = document.getElementById("list");
-      list.innerHTML = "";
-
-      if (approved.length === 0) {
-        list.innerHTML = "<li>Chưa có người nào được duyệt.</li>";
-        return;
-      }
-
-      approved.forEach((user, index) => {
-        const li = document.createElement("li");
-        li.textContent = `${index + 1}. ${user.Nickname || user.Username}`;
-        list.appendChild(li);
+        filtered.forEach((row, index) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${row["Nickname"]}</td>
+          `;
+          tableBody.appendChild(tr);
+        });
       });
-    }
-
-    loadDanhSach();
   </script>
 </body>
 </html>
