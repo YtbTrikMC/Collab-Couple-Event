@@ -2,160 +2,87 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>COUPLE COLLAB EVENT – Đăng ký Tham Gia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Đăng ký tham gia - COUPLE COLLAB EVENT</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 20px;
-      max-width: 500px;
-      margin: auto;
-      background: #f2f2f2;
+      margin: 0;
+      padding: 0;
+      display: flex;
     }
-    h2 {
-      text-align: center;
+    nav {
+      width: 180px;
+      background: #f0f0f0;
+      padding: 20px 10px;
+      height: 100vh;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     }
-    label {
-      margin-top: 10px;
-      display: block;
-    }
-    input, select, button {
-      display: block;
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
+    nav h3 {
       font-size: 16px;
+      margin-bottom: 10px;
     }
-    #nav {
-      margin-top: 20px;
-      text-align: center;
-    }
-    #nav a {
-      margin: 0 10px;
+    nav a {
+      display: block;
+      margin: 10px 0;
       text-decoration: none;
-      color: #007bff;
+      color: #333;
+      font-weight: bold;
       font-size: 14px;
+    }
+    .container {
+      padding: 20px;
+      flex: 1;
     }
   </style>
 </head>
 <body>
-  <h2>Đăng ký tham gia sự kiện</h2>
+  <nav>
+    <h3>📋 Menu</h3>
+    <a href="dangky.html">1. Thông tin</a>
+    <a href="danhsach.html">2. Danh sách</a>
+    <a href="bangthidau.html">3. Bảng thi đấu</a>
+    <a href="bangdiem.html">4. Bảng điểm</a>
+  </nav>
 
-  <form id="registerForm">
-    <label for="gmail">Gmail:</label>
-    <input type="email" id="gmail" required>
-
-    <label for="facebook">Link Facebook:</label>
-    <input type="url" id="facebook" placeholder="https://facebook.com/..." required>
-
-    <label for="nickname">Nickname:</label>
-    <input type="text" id="nickname" required>
-
-    <label for="pttt">Phương thức thanh toán:</label>
-    <select id="pttt" required onchange="updatePTTT()">
-      <option value="">-- Chọn --</option>
-      <option value="Bank">Ngân hàng</option>
-      <option value="Momo">Momo</option>
-      <option value="Nhà mạng">Nhà mạng</option>
-    </select>
-
-    <div id="bankFields" style="display:none;">
-      <label for="stk">Số tài khoản:</label>
-      <input type="text" id="stk">
-      <label for="bank">Tên ngân hàng:</label>
-      <input type="text" id="bank">
-    </div>
-
-    <div id="momoFields" style="display:none;">
-      <label for="momoStk">Số Momo:</label>
-      <input type="text" id="momoStk">
-    </div>
-
-    <div id="carrierFields" style="display:none;">
-      <label for="sdt">Số điện thoại:</label>
-      <input type="text" id="sdt">
-      <label for="nhamang">Nhà mạng:</label>
-      <input type="text" id="nhamang">
-    </div>
-
-    <button type="submit">Gửi đăng ký</button>
-  </form>
-
-  <div id="nav">
-    <a href="dangky.html">Trang 2</a>
-    <a href="danhsach.html">Trang 3</a>
-    <a href="bangthidau.html">Trang 4</a>
-    <a href="bangdiem.html">Trang 5</a>
+  <div class="container">
+    <h2>Thông tin đăng ký sự kiện</h2>
+    <div id="info"></div>
   </div>
 
   <script>
-    const SHEET_API = "https://api.sheetbest.com/sheets/1a1c2a8f-521c-433e-af69-d07c8bf1165f";
+    const sheetAPI = 'https://api.sheetbest.com/sheets/1a1c2a8f-521c-433e-af69-d07c8bf1165f';
     const username = localStorage.getItem("username");
 
-    if (!username) {
-      alert("Bạn cần đăng nhập trước!");
-      window.location.href = "index.html";
-    }
+    fetch(sheetAPI)
+      .then(res => res.json())
+      .then(data => {
+        const user = data.find(row => row.Username === username);
+        if (!user) {
+          document.getElementById("info").innerHTML = "Không tìm thấy tài khoản.";
+          return;
+        }
 
-    document.getElementById("registerForm").addEventListener("submit", async function(e) {
-      e.preventDefault();
-      const gmail = document.getElementById("gmail").value.trim();
-      const nickname = document.getElementById("nickname").value.trim();
-      const pttt = document.getElementById("pttt").value;
-      const facebook = document.getElementById("facebook").value.trim();
+        let pttt = "";
+        if (user["PT_TT"] === "Bank") {
+          pttt = `Bank – STK: ${user["STK"] || ""} – Ngân hàng: ${user["Ngân hàng"] || ""}`;
+        } else if (user["PT_TT"] === "Momo") {
+          pttt = `Momo – STK: ${user["STK"] || ""}`;
+        } else if (user["PT_TT"] === "Nhà mạng") {
+          pttt = `Nhà mạng – SĐT: ${user["SĐT"] || ""} – Nhà mạng: ${user["Nhà mạng"] || ""}`;
+        } else {
+          pttt = user["PT_TT"] || "Chưa đăng ký";
+        }
 
-      let stk = "", bank = "", momo = "", sdt = "", nhamang = "";
-
-      if (pttt === "Bank") {
-        stk = document.getElementById("stk").value.trim();
-        bank = document.getElementById("bank").value.trim();
-      } else if (pttt === "Momo") {
-        stk = document.getElementById("momoStk").value.trim();
-      } else if (pttt === "Nhà mạng") {
-        sdt = document.getElementById("sdt").value.trim();
-        nhamang = document.getElementById("nhamang").value.trim();
-      }
-
-      const res = await fetch(SHEET_API);
-      const data = await res.json();
-      const oldUser = data.find(u => u.Username === username);
-
-      if (!oldUser) return alert("Không tìm thấy tài khoản.");
-
-      const updated = {
-        Username: username,
-        Password: oldUser.Password || "",
-        Gmail: gmail,
-        Nickname: nickname,
-        PT_TT: pttt,
-        STK: stk,
-        "Ngân hàng": bank,
-        "SĐT": sdt,
-        "Nhà mạng": nhamang,
-        Facebook: facebook,
-        "Trạng thái": "Đã đăng ký",
-        "Được duyệt": oldUser["Được duyệt"] || "false",
-        Điểm: oldUser["Điểm"] || "0",
-        Couple: oldUser["Couple"] || "",
-        "Đối thủ": oldUser["Đối thủ"] || "",
-        "Thời gian đấu": oldUser["Thời gian đấu"] || ""
-      };
-
-      await fetch(SHEET_API + `/Username/${username}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updated)
+        document.getElementById("info").innerHTML = `
+          <p><strong>Username:</strong> ${user["Username"]}</p>
+          <p><strong>Nickname:</strong> ${user["Nickname"] || ""}</p>
+          <p><strong>Gmail:</strong> ${user["Gmail"] || ""}</p>
+          <p><strong>Facebook:</strong> ${user["Facebook"] || ""}</p>
+          <p><strong>Điểm:</strong> ${user["Điểm"] || "0"}</p>
+          <p><strong>Phương thức thanh toán:</strong> ${pttt}</p>
+        `;
       });
-
-      alert("Đăng ký thành công!");
-      location.reload();
-    });
-
-    function updatePTTT() {
-      const value = document.getElementById("pttt").value;
-      document.getElementById("bankFields").style.display = value === "Bank" ? "block" : "none";
-      document.getElementById("momoFields").style.display = value === "Momo" ? "block" : "none";
-      document.getElementById("carrierFields").style.display = value === "Nhà mạng" ? "block" : "none";
-    }
   </script>
 </body>
 </html>
