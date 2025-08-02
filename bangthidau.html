@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bảng điểm - COUPLE COLLAB EVENT</title>
+  <title>Bảng Thi Đấu</title>
   <style>
     body {
       margin: 0;
@@ -16,6 +16,7 @@
       padding: 20px 10px;
       height: 100vh;
       box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
     }
     nav h3 {
       font-size: 16px;
@@ -31,20 +32,25 @@
     }
     .container {
       flex: 1;
-      padding: 20px;
+      padding: 30px;
+      box-sizing: border-box;
+    }
+    h1 {
+      font-size: 22px;
+      margin-bottom: 20px;
     }
     table {
-      border-collapse: collapse;
       width: 100%;
-      margin-top: 20px;
+      border-collapse: collapse;
     }
     th, td {
-      border: 1px solid #aaa;
-      padding: 8px;
+      padding: 10px;
+      border: 1px solid #ccc;
       text-align: center;
+      font-size: 14px;
     }
     th {
-      background-color: #eee;
+      background-color: #f5f5f5;
     }
   </style>
 </head>
@@ -58,37 +64,39 @@
   </nav>
 
   <div class="container">
-    <h2>Bảng điểm</h2>
-    <table id="scoreTable">
+    <h1>Bảng Thi Đấu</h1>
+    <table>
       <thead>
         <tr>
-          <th>STT</th>
-          <th>Nickname</th>
-          <th>Couple</th>
-          <th>Điểm</th>
+          <th>Cặp đấu</th>
+          <th>Couple 1</th>
+          <th>Couple 2</th>
+          <th>Kết quả</th>
+          <th>Thời gian đấu</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody id="matchTable"></tbody>
     </table>
   </div>
 
   <script>
-    const sheetAPI = 'https://api.sheetbest.com/sheets/1a1c2a8f-521c-433e-af69-d07c8bf1165f';
-
-    fetch(sheetAPI)
-      .then(res => res.json())
+    fetch("https://api.sheetbest.com/sheets/1a1c2a8f-521c-433e-af69-d07c8bf1165f")
+      .then(response => response.json())
       .then(data => {
-        const filtered = data.filter(row => row["Được duyệt"] === "TRUE");
-        const tableBody = document.querySelector("#scoreTable tbody");
-        filtered.forEach((row, index) => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${row["Nickname"]}</td>
-            <td>${row["Couple"] || ""}</td>
-            <td>${row["Điểm"] || ""}</td>
-          `;
-          tableBody.appendChild(tr);
+        const tableBody = document.getElementById("matchTable");
+
+        data.forEach(row => {
+          if (row["Couple 1"] && row["Couple 2"]) {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${row["Cặp đấu"] || ""}</td>
+              <td>${row["Couple 1"] || ""}</td>
+              <td>${row["Couple 2"] || ""}</td>
+              <td>${row["Kết quả"] || ""}</td>
+              <td>${row["Thời gian đấu"] || ""}</td>
+            `;
+            tableBody.appendChild(tr);
+          }
         });
       });
   </script>
