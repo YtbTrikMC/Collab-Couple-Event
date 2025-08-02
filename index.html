@@ -2,92 +2,69 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>COUPLE COLLAB EVENT – Đăng ký / Đăng nhập</title>
+  <title>COUPLE COLLAB EVENT – Đăng Nhập</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 30px;
       max-width: 400px;
-      margin: auto;
-      background: #f2f2f2;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f9f9f9;
     }
     h2 {
       text-align: center;
+    }
+    label {
+      margin-top: 10px;
+      display: block;
     }
     input, button {
       display: block;
       width: 100%;
       padding: 10px;
-      margin: 10px 0;
+      margin-top: 5px;
       font-size: 16px;
     }
-    #status {
-      text-align: center;
-      color: green;
+    button {
+      margin-top: 15px;
     }
   </style>
 </head>
 <body>
-  <h2>COUPLE COLLAB EVENT</h2>
-  <h3>Đăng ký / Đăng nhập</h3>
+  <h2>Đăng nhập tài khoản</h2>
+  <form id="loginForm">
+    <label for="username">Tài khoản:</label>
+    <input type="text" id="username" required>
 
-  <input type="text" id="username" placeholder="Tên tài khoản" required>
-  <input type="password" id="password" placeholder="Mật khẩu" required>
+    <label for="password">Mật khẩu:</label>
+    <input type="password" id="password" required>
 
-  <button onclick="register()">Đăng ký</button>
-  <button onclick="login()">Đăng nhập</button>
-
-  <p id="status"></p>
+    <button type="submit">Đăng nhập</button>
+  </form>
 
   <script>
     const SHEET_API = "https://api.sheetbest.com/sheets/1a1c2a8f-521c-433e-af69-d07c8bf1165f";
 
-    async function getUsers() {
+    document.getElementById("loginForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
       const res = await fetch(SHEET_API);
-      return await res.json();
-    }
+      const data = await res.json();
 
-    async function register() {
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-      if (!username || !password) return alert("Vui lòng điền đầy đủ tài khoản và mật khẩu.");
+      const user = data.find(u => u.Username === username && u.Password === password);
 
-      const users = await getUsers();
-      const exists = users.find(u => u.Username === username);
-      if (exists) return alert("Tài khoản đã tồn tại!");
-
-      const newUser = {
-        Username: username,
-        Password: password,
-        "Trạng thái": "Chưa đăng ký",
-        "Được duyệt": "false",
-        Điểm: "0"
-      };
-
-      await fetch(SHEET_API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newUser)
-      });
-
-      document.getElementById("status").innerText = "Đăng ký thành công! Chuyển hướng...";
-      localStorage.setItem("username", username);
-      setTimeout(() => window.location.href = "dangky.html", 1500);
-    }
-
-    async function login() {
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-      if (!username || !password) return alert("Vui lòng điền đầy đủ tài khoản và mật khẩu.");
-
-      const users = await getUsers();
-      const user = users.find(u => u.Username === username && u.Password === password);
-      if (!user) return alert("Sai tài khoản hoặc mật khẩu!");
+      if (!user) {
+        alert("Sai tài khoản hoặc mật khẩu.");
+        return;
+      }
 
       localStorage.setItem("username", username);
-      document.getElementById("status").innerText = "Đăng nhập thành công! Chuyển hướng...";
-      setTimeout(() => window.location.href = "dashboard.html", 1000);
-    }
+      alert("Đăng nhập thành công!");
+      window.location.href = "dangky.html";
+    });
   </script>
 </body>
 </html>
