@@ -57,8 +57,15 @@
   <div class="container">
     <div class="thankyou-box">
       <strong>Cảm ơn bạn đã đăng ký tham dự sự kiện.</strong><br/>
-      Vui lòng theo dõi trang cá nhân chính thức của BTC để nhận thông tin mới nhất.
+      Vui lòng theo dõi trang cá nhân chính thức của BTC để nhận thông tin mới nhất.<br/>
+      <em>Trang sẽ tự động chuyển hướng trong 5 giây...</em>
     </div>
   </div>
+
+  <script>
+    setTimeout(function () {
+      window.location.href = "hinhthuc.html";
+    }, 5000); // chuyển sau 5 giây
+  </script>
 </body>
 </html>
