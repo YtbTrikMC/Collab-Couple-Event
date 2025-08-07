@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>COUPLE ARTIST CARD</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -72,6 +73,23 @@
       font-size: 16px;
       cursor: pointer;
     }
+
+    #cropContainer {
+      display: none;
+      margin-top: 20px;
+    }
+
+    #cropContainer img {
+      max-width: 100%;
+      max-height: 400px;
+      border: 1px solid #aaa;
+    }
+
+    .hightlight {
+      font-weight: bold;
+      color: #444;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -89,6 +107,13 @@
     <button onclick="downloadCard()">Tải ảnh card</button>
   </div>
 
+  <div id="cropContainer">
+    <h3>Chỉnh sửa ảnh</h3>
+    <img id="cropImage" />
+    <br>
+    <button onclick="cropImage()">Cắt ảnh</button>
+  </div>
+
   <div id="studentCard" class="card">
     <img id="previewImage" src="" alt="Ảnh OC">
     <div class="info">
@@ -104,9 +129,50 @@
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <script>
+    let cropper;
+
+    document.getElementById("imageUpload").addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        const imgElement = document.getElementById("cropImage");
+        imgElement.src = event.target.result;
+        document.getElementById("cropContainer").style.display = "block";
+
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(imgElement, {
+          aspectRatio: 4 / 5, // khung đứng
+          viewMode: 1,
+          dragMode: 'move',
+          autoCropArea: 1,
+          responsive: true,
+          zoomable: true,
+          movable: true,
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function cropImage() {
+      if (!cropper) return;
+
+      const canvas = cropper.getCroppedCanvas({
+        width: 120,
+        height: 150,
+      });
+
+      const preview = document.getElementById("previewImage");
+      preview.src = canvas.toDataURL("image/png");
+
+      document.getElementById("cropContainer").style.display = "none";
+    }
+
     function generateRandomID() {
-      return Math.floor(100000000 + Math.random() * 900000000); // 9 chữ số
+      return Math.floor(100000000 + Math.random() * 900000000);
     }
 
     function updateCard() {
@@ -125,17 +191,7 @@
 
       const today = new Date();
       const formattedDate = today.toLocaleDateString('vi-VN') + ' ' + today.toLocaleTimeString('vi-VN');
-
       document.getElementById("cardDate").textContent = "Hiệu lực từ: " + formattedDate;
-
-      const file = document.getElementById("imageUpload").files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          document.getElementById("previewImage").src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
     }
 
     function downloadCard() {
@@ -143,7 +199,7 @@
       html2canvas(card, {
         useCORS: true,
         allowTaint: true,
-        scale: 2 // Xuất ảnh nét hơn
+        scale: 2
       }).then(canvas => {
         const link = document.createElement("a");
         link.download = "cccd_oc.png";
