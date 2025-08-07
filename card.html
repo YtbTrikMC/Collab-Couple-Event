@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>COUPLE ARTIST CARD</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f0f0f0;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .input-form input {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      width: 90%;
+      max-width: 300px;
+    }
+
+    .card {
+      width: 90%;
+      max-width: 520px;
+      background: linear-gradient(to right, #f9f9f9, #e0f7ff);
+      border: 2px solid #007acc;
+      margin: 20px auto;
+      position: relative;
+      padding: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .card img {
+      width: 120px;
+      height: 150px;
+      object-fit: cover;
+      border: 2px solid #007acc;
+      background: #ccc;
+      margin-right: 15px;
+    }
+
+    .info {
+      flex-grow: 1;
+      text-align: left;
+      font-size: 18px;
+      line-height: 1.5;
+    }
+
+    .info p {
+      margin: 5px 0;
+      word-break: break-word;
+    }
+
+    .title {
+      color: #007acc;
+      font-weight: bold;
+      font-size: 22px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>CREATE COUPLE ARTIST CARD</h2>
+
+  <div class="input-form">
+    <input type="text" id="name" placeholder="Tên"><br>
+    <input type="text" id="age" placeholder="Giới tính"><br>
+    <input type="text" id="birth" placeholder="Ngày sinh (dd/mm)"><br>
+    <input type="text" id="zodiac" placeholder="Cung"><br>
+    <input type="text" id="hobby" placeholder="Sở thích"><br>
+    <input type="file" id="imageUpload" accept="image/*"><br>
+    <button onclick="updateCard()">Tạo thẻ</button>
+    <button onclick="downloadCard()">Tải ảnh card</button>
+  </div>
+
+  <div id="studentCard" class="card">
+    <img id="previewImage" src="" alt="Ảnh OC">
+    <div class="info">
+      <div class="title">COUPLE ARTIST CARD</div>
+      <p id="cardID">ID: ..........</p>
+      <p id="cardName">Tên: ...</p>
+      <p id="cardAge">Giới tính: ...</p>
+      <p id="cardBirth">Ngày sinh: ...</p>
+      <p id="cardZodiac">Cung: ...</p>
+      <p id="cardHobby">Sở thích: ...</p>
+      <p id="cardDate">Hiệu lực từ: ...</p>
+      <div class="hightlight">#ibispaintx_cpss1</div>
+    </div>
+  </div>
+
+  <script>
+    function generateRandomID() {
+      return Math.floor(100000000 + Math.random() * 900000000); // 9 chữ số
+    }
+
+    function updateCard() {
+      const name = document.getElementById("name").value || "...";
+      const age = document.getElementById("age").value || "...";
+      const birth = document.getElementById("birth").value || "...";
+      const zodiac = document.getElementById("zodiac").value || "...";
+      const hobby = document.getElementById("hobby").value || "...";
+
+      document.getElementById("cardID").textContent = "ID: " + generateRandomID();
+      document.getElementById("cardName").textContent = "Tên: " + name;
+      document.getElementById("cardAge").textContent = "Giới tính: " + age;
+      document.getElementById("cardBirth").textContent = "Ngày sinh: " + birth;
+      document.getElementById("cardZodiac").textContent = "Cung: " + zodiac;
+      document.getElementById("cardHobby").textContent = "Sở thích: " + hobby;
+
+      const today = new Date();
+      const formattedDate = today.toLocaleDateString('vi-VN') + ' ' + today.toLocaleTimeString('vi-VN');
+
+      document.getElementById("cardDate").textContent = "Hiệu lực từ: " + formattedDate;
+
+      const file = document.getElementById("imageUpload").files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById("previewImage").src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function downloadCard() {
+      const card = document.getElementById("studentCard");
+      html2canvas(card, {
+        useCORS: true,
+        allowTaint: true,
+        scale: 2 // Xuất ảnh nét hơn
+      }).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "cccd_oc.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      });
+    }
+  </script>
+
+</body>
+</html>
